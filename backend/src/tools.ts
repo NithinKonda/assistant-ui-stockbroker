@@ -15,18 +15,15 @@ export async function callFinancialDatasetAPI<
   endpoint: string;
   params: Record<string, string>;
 }): Promise<Output> {
-  if (!process.env.FINANCIAL_DATASETS_API_KEY) {
-    throw new Error("FINANCIAL_DATASETS_API_KEY is not set");
+  const baseURL = process.env.NEXT_PUBLIC_API_URL; // Ensure this is set in the .env file
+  if (!baseURL) {
+    throw new Error("NEXT_PUBLIC_API_URL is not set");
   }
 
-  const baseURL = "https://api.financialdatasets.ai";
   const queryParams = new URLSearchParams(fields.params).toString();
   const url = `${baseURL}${fields.endpoint}?${queryParams}`;
   const response = await fetch(url, {
     method: "GET",
-    headers: {
-      "X-API-KEY": process.env.FINANCIAL_DATASETS_API_KEY,
-    },
   });
 
   if (!response.ok) {
@@ -47,6 +44,7 @@ export async function callFinancialDatasetAPI<
   const data = await response.json();
   return data;
 }
+
 
 const incomeStatementsTool = tool(
   async (input) => {
