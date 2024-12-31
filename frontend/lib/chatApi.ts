@@ -3,12 +3,13 @@ import { LangChainMessage } from "@assistant-ui/react-langgraph";
 
 const createClient = () => {
   const apiUrl =
-    process.env["NEXT_PUBLIC_LANGGRAPH_API_URL"] ||
-    new URL("/api", window.location.href).href;
+    process.env["NEXT_PUBLIC_LANGGRAPH_API_URL"] || 
+    "http://127.0.0.1:5000"; // Fallback to local Python backend
   return new Client({
     apiUrl,
   });
 };
+
 
 export const createAssistant = async (graphId: string) => {
   const client = createClient();
