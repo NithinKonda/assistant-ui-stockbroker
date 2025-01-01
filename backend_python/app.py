@@ -139,8 +139,8 @@ def create_thread():
     return jsonify({"thread_id": thread_id, "status": "created"}), 200
 
 @app.route('/threads/<thread_id>/runs/stream', methods=['POST', 'OPTIONS'])
-@app.route('/api/threads/<thread_id>/runs/stream', methods=['POST', 'OPTIONS'])
 def stream_runs(thread_id):
+    print(f"Received stream request for thread ID: {thread_id}")  # Debug log
     if request.method == 'OPTIONS':
         response = jsonify({"message": "Preflight request successful"})
         response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
@@ -150,6 +150,7 @@ def stream_runs(thread_id):
 
     def stream():
         for data in generate_stream():
+            print(f"Streaming data: {data}")  # Debug log
             yield data
 
     response = Response(
@@ -160,6 +161,7 @@ def stream_runs(thread_id):
     response.headers['Cache-Control'] = 'no-cache'
     response.headers['Connection'] = 'keep-alive'
     return response
+
 
 @app.route('/threads/<thread_id>/state', methods=['GET', 'OPTIONS'])
 @app.route('/api/threads/<thread_id>/state', methods=['GET', 'OPTIONS'])

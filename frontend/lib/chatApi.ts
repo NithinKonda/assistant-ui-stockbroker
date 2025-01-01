@@ -17,8 +17,13 @@ export const createAssistant = async (graphId: string) => {
 };
 
 export const createThread = async () => {
-  const client = createClient();
-  return client.threads.create();
+  try {
+    const client = createClient();
+    return await client.threads.create();
+  } catch (error) {
+    console.error("Error creating thread:", error);
+    throw error; // Re-throw the error if needed
+  }
 };
 
 export const getThreadState = async (
@@ -46,24 +51,25 @@ export const sendMessage = async (params: {
   threadId: string;
   messages: LangChainMessage[];
 }) => {
-  const client = createClient();
-
-  let input: Record<string, any> | null = {
-    messages: params.messages,
-  };
-  const config = {
-    configurable: {
-      model_name: "openai",
-    },
-  };
-
-  return client.runs.stream(
-    params.threadId,
-    process.env["NEXT_PUBLIC_LANGGRAPH_ASSISTANT_ID"]!,
-    {
-      input,
-      config,
-      streamMode: "messages",
-    }
-  );
+  try {
+    const client = createClient();
+    const input: Record<string, any> = { messages: params.messages };
+    const config = {
+      configurable: {
+        model_name: "openai",
+      },
+    };
+    return await client.runs.stream(
+      params.threadId,
+      process.env["NEXT_PUBLIC_LANGGRAPH_ASSISTANT_ID"]!,
+      {
+        input,
+        config,
+        streamMode: "messages",
+      }
+    );
+  } catch (error) {
+    console.error("Error sending message:", error);
+    throw error;
+  }
 };
